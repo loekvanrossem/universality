@@ -1,4 +1,4 @@
-name: ICML2024
+name: universality
 
 channels:
   - conda-forge
