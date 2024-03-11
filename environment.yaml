@@ -1,0 +1,28 @@
+name: ICML2024
+
+channels:
+  - conda-forge
+  - pytorch
+
+dependencies:
+  - python>=3.10
+  - ipython
+  - ipykernel
+  - ipywidgets
+
+  - tqdm
+
+  - numpy
+  - scipy
+  - pandas>=2.0.0
+  - pytables
+  - scikit-learn
+  - numba
+
+  - matplotlib
+  - plotly
+
+  - pytorch>=1.7.1
+  - torchvision>=0.15
+
+  - pip
