@@ -19,6 +19,7 @@ def der(t, z, eta_h, eta_y, dx2, dy2):
 
 @njit
 def loss(t, z, eta_y_mean, dy2, y0_mean):
+    """Mean squared loss for two datapoints."""
     L = (1 / 4) * (
         2 * np.exp(-2 * t * eta_y_mean) * y0_mean + z[2] + (1 / 2) * (dy2 - z[1])
     )
@@ -45,6 +46,7 @@ def rep_sim(h0, y0, w0, dx2, dy2):
 
 
 def optimize_eta(h2, y2, w, dx2, dy2, guesses=np.logspace(-6, 2, 200)):
+    """Find the best fitting values for eta_h and eta_y."""
     h0, y0, w0 = h2[0], y2[0], w[0]
     n_epochs = len(h2)
 
@@ -61,19 +63,12 @@ def optimize_eta(h2, y2, w, dx2, dy2, guesses=np.logspace(-6, 2, 200)):
             [h0, y0, w0],
             args=(eta_h, eta_y, dx2, dy2),
             dense_output=True,
-            # rtol=1e-2,
-            # atol=1e-5,
             method="Radau",
         )
 
         t = np.linspace(0, t_max, n_epochs)
         z = sol.sol(t)
 
-        # loss = (
-        #     np.sum((h2 - z[0]) ** 2)
-        #     + np.sum((y2 - z[1]) ** 2)
-        #     + np.sum((w - z[2]) ** 2)
-        # )
         loss = (
             np.sum((h2 - z[0]) ** 2)
             + np.sum((y2 - z[1]) ** 2)
@@ -81,11 +76,10 @@ def optimize_eta(h2, y2, w, dx2, dy2, guesses=np.logspace(-6, 2, 200)):
         )
         return loss
 
-    # Optimize etas
+    # Find optimal etas
     guess = guesses[
         np.argmin([model_accuracy(guess * np.array([ratio, 1])) for guess in guesses])
     ]
-
     optimal = scipy.optimize.minimize(model_accuracy, guess * np.array([ratio, 1]))
     loss = optimal.fun
     eta_h_opt, eta_y_opt = optimal.x
@@ -96,6 +90,7 @@ def optimize_eta(h2, y2, w, dx2, dy2, guesses=np.logspace(-6, 2, 200)):
 
 
 def optimize_eta_y_mean(z, train_loss, dy2, y0_mean):
+    """Find the best fitting eta_y_mean."""
     n_epochs = len(train_loss)
 
     def model_accuracy(pars):
@@ -119,22 +114,3 @@ def optimize_eta_y_mean(z, train_loss, dy2, y0_mean):
     (eta_y_mean_opt,) = optimal.x
 
     return eta_y_mean_opt
-
-
-C = 0.05
-
-
-class Discontinuous(torch.autograd.Function):
-    @staticmethod
-    def forward(self, input):
-        positives = input > 0
-        self.save_for_backward(positives)
-        output = positives * (input + C)
-
-        return output
-
-    @staticmethod
-    def backward(self, grad_output):
-        (positives,) = self.saved_tensors
-        grad_input = positives * grad_output
-        return grad_input
