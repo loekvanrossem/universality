@@ -39,14 +39,14 @@ def get_activations(
         # Iterate through batches
         for inputs, _ in dataloader:
             # Get labels
-            labels = [
-                (
-                    "".join(str(char) for char in encoding.decode(input.cpu()))
-                    if encoding.decode(input.cpu())
-                    else tuple(np.squeeze(input.cpu()).numpy())
-                )
-                for input in inputs
-            ]
+            labels = []
+            for input in inputs:
+                try:
+                    decoding = encoding.decode(input.cpu())
+                    label = "".join(str(char) for char in decoding)
+                except KeyError:
+                    label = tuple(np.squeeze(input.cpu()).numpy())
+                labels.append(label)
 
             # Check for unrecognized labels
             if any(label is None for label in labels):
