@@ -1,0 +1,5 @@
+model_type nonlinearity gain lr P L n_epochs hidden_layer dx2 dy2 in_dim out_dim
+
+high_init MLP tanh 2.0 0.0015 100 4 750 2 0 0 0 0
+low_init MLP tanh 0.5 0.015 100 4 1500 2 0 0 0 0
+vlow_init MLP tanh 0.275 0.05 100 4 2000 2 0 0 0 0
