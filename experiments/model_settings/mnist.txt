@@ -1,3 +1,4 @@
 model_type nonlinearity gain lr P L n_epochs hidden_layer dx2 dy2 in_dim out_dim
 
-trajectories MLP leaky_relu 0.5 0.002 100 4 500 2 0 0 0 0
+structure MLP leaky_relu 0.5 0.005 200 4 200 2 0 0 0 0
+trajectories MLP leaky_relu 0.5 0.003 200 4 200 2 0 0 0 0
